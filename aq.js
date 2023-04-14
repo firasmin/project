@@ -1,9 +1,9 @@
-let a =document.getElementById("main-header");
-console.log(a.textContent);
-console.log(a.innerText);
-console.log(a.innerHTML);
-a.innerHTML="<h4>something </h4>"
-console.log(document.body);
+// let a =document.getElementById("main-header");
+// console.log(a.textContent);
+// console.log(a.innerText);
+// console.log(a.innerHTML);
+// a.innerHTML="<h4>something </h4>"
+// console.log(document.body);
 // let x= document.getElementsByClassName("list-group-item");
 // //document.title.style.backgroundColor="#ffffff";
 // document.body.style.backgroundColor="lightblue";
@@ -16,12 +16,16 @@ console.log(document.body);
 //     x[i].style.backgroundColor="#f4f4f4";
 // }
 
-let x= document.getElementsByTagName("li");
+//let x= document.getElementsByTagName("li");
 
 
-console.log(x);
-x[0].style.backgroundColor ="f4f1f4";
-for (let i=0;i<x.length;i++)
-{
-    x[i].style.backgroundColor="#f4f4f4";
-}
+//console.log(x);
+// x[0].style.backgroundColor ="f4f1f4";
+// for (let i=0;i<x.length;i++)
+// {
+//     x[i].style.backgroundColor="#f4f4f4";
+// }
+document.querySelector(".list-group-item:nth-child(2)").style.backgroundColor="green";
+
+document.querySelector(".list-group-item:nth-child(3)").style.visibility  = 'hidden';
+
