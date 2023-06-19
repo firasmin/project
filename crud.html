@@ -63,48 +63,44 @@ function onsubmit(e)
         description,
         category
  }
- axios.post("https://crudcrud.com/api/d8c6d41b4946465f930cf2e52f955da6/apponiteddata",my_obj).then((data)=>shoeonscreen(my_obj)).catch((err)=>console.log(err))
+ axios.post("https://crudcrud.com/api/7b296035f0a947758a008b83704f3725/apponiteddata",my_obj).then((data)=>shoeonscreen(my_obj)).catch((err)=>console.log(err))
 }
 window.addEventListener("DOMContentLoaded",()=>{
-  axios.get("https://crudcrud.com/api/d8c6d41b4946465f930cf2e52f955da6/apponiteddata").then((response)=>{console.log(response)
+  axios.get("https://crudcrud.com/api/7b296035f0a947758a008b83704f3725/apponiteddata").then((response)=>{
 
   for(var i=0;i<response.data.length;i++)
 {
   shoeonscreen(response.data[i])
 }}).
   catch((error)=>console.log(error))
+
 })
 function shoeonscreen(my_obj)
 {
     let parentelement =document.getElementById('listofitem');
-    let Childele=document.createElement('li');
+    let chidhtml=`<li id=${my_obj._id}>
+      ${my_obj.expense}
+                   <button onclick=deleteuser('${my_obj._id}')>delete</button> </li>`
+ parentelement.innerHTML=parentelement.innerHTML+chidhtml
 
 
-Childele.textContent=my_obj.expense+' '+my_obj.description+'  '+my_obj.category
-let deletebtn=document.createElement('input')
-deletebtn.type="button"
-deletebtn.value="delete"
-deletebtn.onclick=()=>{
-    localStorage.removeItem(my_obj.description)
-    parentelement.removeChild(Childele)
-}
-let editbtn=document.createElement('input')
-editbtn.type="button"
-editbtn.value="Edit"
-editbtn.onclick=()=>{
-    localStorage.removeItem(my_obj.description)
-    parentelement.removeChild(Childele)
-    document.getElementById('expense').value=my_obj.expense
-    document.getElementById('description').value=my_obj.description
-    document.getElementById('category').value=my_obj.category
+
 
 }
-Childele.appendChild(deletebtn)
-Childele.appendChild(editbtn)
-parentelement.appendChild(Childele)
+function deleteuser(userId )
+{
+  axios.delete(`https://crudcrud.com/api/7b296035f0a947758a008b83704f3725/apponiteddata/${userId}`).then((response)=>{
+    removeuser(userId) 
 }
 
+).catch((err)=>console.log(err))}
 
+function removeuser(userId){
+  let parentelement =document.getElementById('listofitem');
+ let childtobedeleted=document.getElementById(userId)
+ 
+  parentelement.removeChild(childtobedeleted)
+ }
    </script>
 </body>
 </html>
