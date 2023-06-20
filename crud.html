@@ -63,10 +63,10 @@ function onsubmit(e)
         description,
         category
  }
- axios.post("https://crudcrud.com/api/7b296035f0a947758a008b83704f3725/apponiteddata",my_obj).then((data)=>shoeonscreen(my_obj)).catch((err)=>console.log(err))
+ axios.post("https://crudcrud.com/api/419c512551cb407f9c7c3554f515366e/apponiteddata",my_obj).then((data)=>shoeonscreen(my_obj)).catch((err)=>console.log(err))
 }
 window.addEventListener("DOMContentLoaded",()=>{
-  axios.get("https://crudcrud.com/api/7b296035f0a947758a008b83704f3725/apponiteddata").then((response)=>{
+  axios.get("https://crudcrud.com/api/419c512551cb407f9c7c3554f515366e/apponiteddata").then((response)=>{
 
   for(var i=0;i<response.data.length;i++)
 {
@@ -80,7 +80,10 @@ function shoeonscreen(my_obj)
     let parentelement =document.getElementById('listofitem');
     let chidhtml=`<li id=${my_obj._id}>
       ${my_obj.expense}
-                   <button onclick=deleteuser('${my_obj._id}')>delete</button> </li>`
+      ${my_obj.description}
+      ${my_obj.category}
+                   <button onclick=deleteuser('${my_obj._id}')>delete</button>
+                   <button onclick=edituser('${my_obj.expense}','${my_obj.description}','${my_obj.category}','${my_obj._id}')>edit</button> </li>`
  parentelement.innerHTML=parentelement.innerHTML+chidhtml
 
 
@@ -89,17 +92,27 @@ function shoeonscreen(my_obj)
 }
 function deleteuser(userId )
 {
-  axios.delete(`https://crudcrud.com/api/7b296035f0a947758a008b83704f3725/apponiteddata/${userId}`).then((response)=>{
+  axios.delete(`https://crudcrud.com/api/419c512551cb407f9c7c3554f515366e/apponiteddata/${userId}`).then((response)=>{
     removeuser(userId) 
+    console.log("1")
 }
 
 ).catch((err)=>console.log(err))}
+function edituser(expense,description,category,userId)
+{
+  document.getElementById('expense').value=expense
+  document.getElementById('description').value=description
+  document.getElementById('category').value=category
+  deleteuser(userId)
+}
 
 function removeuser(userId){
   let parentelement =document.getElementById('listofitem');
  let childtobedeleted=document.getElementById(userId)
- 
-  parentelement.removeChild(childtobedeleted)
+   if(childtobedeleted)
+   {
+      parentelement.removeChild(childtobedeleted)
+   }
  }
    </script>
 </body>
