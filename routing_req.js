@@ -44,6 +44,5 @@ const server =http.createServer((req,res)=>
       res.setHeader('Location','/');
       return res.end()
     }
-   
 })
 server.listen(4000)
