@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <title>Item Lister</title>
+</head>
+<body>
+  <header id="main-header" class="bg-success text-white p-4 mb-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h1 id="header-title">Expense tracker</h1>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <div id="main" class="card card-body">
+      <h2 class="title">Add Items</h2>
+      <form id="form" action="add-booking" method="POST">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="username" name="username"  placeholder="Enter name">
+          </div>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Email address</label>
+          <input type="email" class="form-control"id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone no</label>
+          <input type="text" class="form-control"id="phone" name="phone" placeholder="phone no">
+        </div>
+        <input type="hidden" name="id" >
+       
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+     
+      
+      <ul id="listofitem">
+        
+     </ul>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+   <script>
+let form=document.getElementById('form')
+form.addEventListener('submit',onsubmit)
+function onsubmit(e)
+{
+    e.preventDefault();
+    let username=document.getElementById('username').value
+    let email=document.getElementById('email').value
+    let phone=document.getElementById('phone').value
+    let my_obj={
+        username,
+        email,
+        phone
+ }
+ axios.post("http://localhost:4000/add-booking",my_obj).then((response)=>{
+
+ 
+ console.log(response)
+ shoeonscreen(response.data.userdata)
+
+ }
+ ).catch((err)=>console.log(err))
+}
+window.addEventListener("DOMContentLoaded",()=>{
+  axios.get("http://localhost:4000/get-booking").then((response)=>{
+
+  for(var i=0;i<response.data.showdata.length;i++)
+{
+  shoeonscreen(response.data.showdata[i])
+}}).
+  catch((error)=>console.log(error))
+
+})
+function shoeonscreen(my_obj)
+{
+    let parentelement =document.getElementById('listofitem');
+    let chidhtml=`<li=${my_obj.id}>
+      ${my_obj.name}
+      ${my_obj.email}
+      ${my_obj.phone}
+      <button onclick=deleteuser('${my_obj.id}')>delete</button>
+      <br>
+      </li>`
+ parentelement.innerHTML=parentelement.innerHTML+chidhtml
+
+
+
+
+ }
+function deleteuser(userId )
+{
+  axios.delete(`http://localhost:4000/get-delete/${userId}`).then((response)=>{
+    removeuser(userId) 
+    
+}
+
+).catch((err)=>console.log(err))}
+// function edituser(expense,description,category,userId)
+// {
+//   document.getElementById('expense').value=expense
+//   document.getElementById('description').value=description
+//   document.getElementById('category').value=category
+//   deleteuser(userId)
+// }
+
+function removeuser(userId){
+  let parentelement =document.getElementById('listofitem');
+ let childtobedeleted=document.getElementById(userId)
+   if(childtobedeleted)
+   {
+      parentelement.removeChild(childtobedeleted)
+   }
+ }
+   </script> 
+</body>
+</html>
