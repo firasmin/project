@@ -1,3 +1,4 @@
+/* Import Google font - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
 *{
   margin: 0;
@@ -21,7 +22,6 @@ body{
   border-radius: 7px;
   box-shadow: 0 5px 10px rgba(0,0,0,0.3);
 }
-
 .container .form{
   padding: 2rem;
 }
@@ -52,15 +52,7 @@ body{
 .form a:hover{
   text-decoration: underline;
 }
- button{
-  height: 60px;
-  width: 100%;
-  padding: 0 15px;
-  font-size: 17px;
-  margin-bottom: 1.3rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  outline: none;
+.form input.button{
   color: #fff;
   background: #009579;
   font-size: 1.2rem;
@@ -70,7 +62,7 @@ body{
   cursor: pointer;
   transition: 0.4s;
 }
-button:hover{
+.form input.button:hover{
   background: #006653;
 }
 .signup{
