@@ -40,4 +40,26 @@ res.status(500).json({error:err})
     
 
 })
+router.get('/login',(req,res,next)=>{
+    res.sendFile(path.join(root_dir,'login.html'))
+})
+router.post('/login',async(req,res)=>{
+    email=req.body.email
+    password=req.body.password
+    console.log(email)
+    const a=await model.findOne({where:{email:`${email}`}})
+    if(a==null)
+    {
+        res.status(404).json({error:'email is wrong'})
+    }
+    else{
+       if(password==a.password)
+       {
+        res.status(200).json({message:"login successfull"})
+       }
+       else{
+        res.status(402).json({error:"password is wrong"})
+       }
+    }
+})
 module.exports=router
