@@ -1,11 +1,14 @@
 const express=require('express')
 const router=express.Router()
 const bcrypt=require('bcrypt')
+const jwt=require('jsonwebtoken')
 const path=require('path')
 const model=require('./model')
 const expense_model=require('./expense_model')
 const root_dir=require('../util/path')
 const { Error } = require('sequelize')
+const authorize=require('./authenticatation')
+const { isFloat32Array } = require('util/types')
 function IsStringInvalid(str)
 {
     if(str==undefined||str.length===0)
@@ -16,6 +19,9 @@ function IsStringInvalid(str)
     {
         return false
     }
+}
+function generateAccesstoken(id){
+  return jwt.sign({userid:id},'securatewq')
 }
 router.get('/signup',(req,res,next)=>{
     res.sendFile(path.join(root_dir,'index.html'))
@@ -70,7 +76,7 @@ router.post('/login',async(req,res)=>{
           if(result==true)
           {
 
-            res.status(200).json({success:true,message:"login successfull"})
+            res.status(200).json({success:true,message:"login successfull",token:generateAccesstoken(a[0].id)})
         }
         else{
          res.status(402).json({success:false,message:"password is wrong"})
@@ -90,35 +96,47 @@ router.post('/login',async(req,res)=>{
 router.get('/expense',(req,res)=>{
     res.sendFile(path.join(root_dir,'expense.html')) 
 })
-router.post('/expense',async(req,res)=>{
+router.post('/expense',authorize.authenticate,async(req,res)=>{
     try{
   const expense=req.body.expense
   const description=req.body.description
   const category=req.body.category
-  await expense_model.create({
+  if(IsStringInvalid(expense)||IsStringInvalid(description)||IsStringInvalid(category))
+    {
+        return res.status(400).json({message:"something is missing"})
+    }
+  const datauser=await req.user.createExpense({
 
-    expense,description,category
+    expense,description,category,
    }
    )
-   res.status(201).json({message:'success'})
+   res.status(201).json({userdata:datauser,success:true,expense})
 
     }catch(err){
-        res.status(500).json({message:'something went wrong'})
+        res.status(500).json({success:false,err})
     }
 })
-router.get('/detail',async(req,res)=>{
+router.get('/detail',authorize.authenticate,async(req,res)=>{
     try{
 
-    const data=await expense_model.findAll()
+    const data=await req.user.getExpenses()
     res.status(200).json({userdetail:data})
 }catch(err){
     res.status(402).json({error:err})
 }
 })
-router.delete('/user_delete/:id',async(req,res)=>{
+router.delete('/user_delete/:id',authorize.authenticate,async(req,res)=>{
     try{
       const uid = req.params.id
-        await expense_model.destroy({where:{id:uid}})
+      if(IsStringInvalid(uid))
+    {
+        return res.status(400).json({success:false,message:"something is missing"})
+    }
+        const row=await expense_model.destroy({where:{id:uid,asadId:req.user.id}})
+        if(row==0)
+        {
+            res.status(405).json({success:false,message:'doesnt belong to user'})
+        }
         res.sendStatus(200)
     }catch(err){
         error:err
