@@ -7,8 +7,9 @@ const model=require('./model')
 const expense_model=require('./expense_model')
 const root_dir=require('../util/path')
 const { Error } = require('sequelize')
+const paymethod=require('./pay_controller')
 const authorize=require('./authenticatation')
-const { isFloat32Array } = require('util/types')
+
 function IsStringInvalid(str)
 {
     if(str==undefined||str.length===0)
@@ -93,6 +94,10 @@ router.post('/login',async(req,res)=>{
     res.status(500).json({message:err})
 }
 })
+router.get('/pay',authorize.authenticate,paymethod.premiumpay)
+router.post('/traction',authorize.authenticate,paymethod.tractions)
+
+router.post('/failtraction',authorize.authenticate,paymethod.tractionfail)
 router.get('/expense',(req,res)=>{
     res.sendFile(path.join(root_dir,'expense.html')) 
 })
@@ -142,4 +147,5 @@ router.delete('/user_delete/:id',authorize.authenticate,async(req,res)=>{
         error:err
     }
     })
+   
 module.exports=router
