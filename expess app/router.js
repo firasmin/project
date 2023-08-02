@@ -9,6 +9,8 @@ const root_dir=require('../util/path')
 const { Error } = require('sequelize')
 const paymethod=require('./pay_controller')
 const authorize=require('./authenticatation')
+const { userInfo } = require('os')
+
 
 function IsStringInvalid(str)
 {
@@ -21,8 +23,8 @@ function IsStringInvalid(str)
         return false
     }
 }
-function generateAccesstoken(id){
-  return jwt.sign({userid:id},'securatewq')
+function generateAccesstoken(id,ispremium){
+  return jwt.sign({userid:id,ispremium},'securatewq')
 }
 router.get('/signup',(req,res,next)=>{
     res.sendFile(path.join(root_dir,'index.html'))
@@ -61,7 +63,7 @@ router.post('/login',async(req,res)=>{
 
     email=req.body.email
     password=req.body.password
-    console.log(email)
+    
     const a=await model.findAll({where:{email:`${email}`}})
     if(IsStringInvalid(email)||IsStringInvalid(password))
     {
@@ -77,7 +79,7 @@ router.post('/login',async(req,res)=>{
           if(result==true)
           {
 
-            res.status(200).json({success:true,message:"login successfull",token:generateAccesstoken(a[0].id)})
+            res.status(200).json({success:true,message:"login successfull",token:generateAccesstoken(a[0].id,a[0].ispremium)})
         }
         else{
          res.status(402).json({success:false,message:"password is wrong"})
@@ -121,6 +123,35 @@ router.post('/expense',authorize.authenticate,async(req,res)=>{
         res.status(500).json({success:false,err})
     }
 })
+
+router.get("/leadership",async(req,res)=>{
+    try{
+        const user= await model.findAll()
+   const expense= await expense_model.findAll()
+   const userAggregatedexpense={}
+   expense.forEach(expense => {
+  
+    if(userAggregatedexpense[expense.asadId])
+    {
+       userAggregatedexpense[expense.asadId]=userAggregatedexpense[expense.asadId]+expense.expense
+    }
+    else{
+        userAggregatedexpense[expense.asadId]=expense.expense
+    }
+    
+   });
+   var USERLEADER=[]
+   user.forEach(users=>{
+    USERLEADER.push({name:users.name,amount:userAggregatedexpense[users.id]||0})
+   })
+   USERLEADER.sort((a,b)=>b.amount-a.amount)
+   return res.status(200).json(USERLEADER)
+
+}catch(err){
+    res.status(402).json({error:err})
+}
+
+   })
 router.get('/detail',authorize.authenticate,async(req,res)=>{
     try{
 

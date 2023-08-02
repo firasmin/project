@@ -47,6 +47,8 @@
    
       </form>
       <button id="rzp_button"> premium subcription</button>
+      <div id="message"></div>
+      <ul id="leadership"></ul>
     </div>
     </div>
     <div class="col-4">
@@ -73,6 +75,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
    <script>
+   
 let form=document.getElementById('addForm')
 form.addEventListener('submit',onsubmit)
 function onsubmit(e)
@@ -87,12 +90,50 @@ function onsubmit(e)
         category
  }
  const token=localStorage.getItem('token')
+ 
  axios.post("http://localhost:4000/expense",my_obj,{headers:{"Authorization":token}}).then((response)=>{
   
+ 
   shoeonscreen(response.data.userdata)}).catch((err)=>showerr(err))
+}
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};  
+function leadership()
+{
+  const inputElent=document.createElement('input')
+  inputElent.type='button'
+  inputElent.value='show leadership'
+  inputElent.onclick=async()=>{
+    const token=localStorage.getItem('token')
+    const userleaderboard=await axios.get('http://localhost:4000/leadership',{headers:{"Authorization":token}})
+    console.log(userleaderboard)
+    const leaderele=document.getElementById('leadership')
+    leaderele.innerHTML+='<h2>leadership board</h2>'
+    userleaderboard.data.forEach(userdetail => {
+      leaderele.innerHTML+=`<li>name:${userdetail.name}amount:${userdetail.amount}</li>`
+    });
+  }
+  document.getElementById('message').appendChild(inputElent)
+}
+function ispremium()
+{
+  document.getElementById('rzp_button').style.visibility="hidden"
+        document.getElementById('message').innerHTML+='<h3>you are premium user</h3>'
 }
 window.addEventListener("DOMContentLoaded",()=>{
   const token=localStorage.getItem('token')
+  const parsetoken=parseJwt(token)
+  const premium=parsetoken.ispremium
+  if(premium)
+  {
+     ispremium()
+     leadership()
+  }
   axios.get("http://localhost:4000/detail",{headers:{"Authorization":token}}).then((response)=>{
 
   for(var i=0;i<response.data.userdetail.length;i++)
@@ -102,6 +143,7 @@ window.addEventListener("DOMContentLoaded",()=>{
   catch((error)=>console.log(error))
 
 })
+
 function shoeonscreen(my_obj)
 {
     let parentelement =document.getElementById('listofitem');
@@ -154,10 +196,14 @@ function removeuser(userId){
     "order_id":response.data.order.id,
     
     "handler":async function(response){
-      await axios.post("http://localhost:4000/traction",{
+      const res=await axios.post("http://localhost:4000/traction",{
         order_id:options.order_id,
         payment_id:response.razorpay_payment_id},{headers:{'Authorization':token}})
         alert('you unlock premium')
+        document.getElementById('rzp_button').style.visibility="hidden"
+        document.getElementById('message').innerHTML+='<h3>you are premium user</h3>'
+        localStorage.setItem('token',res.data.token)
+        leadership()
     },
    
 
@@ -173,6 +219,7 @@ function removeuser(userId){
         order_id:options.order_id,
         payment_id:response.razorpay_payment_id},{headers:{'Authorization':token}})
     alert('something went wrong')
+    
     })
   }
 
