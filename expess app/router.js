@@ -4,12 +4,15 @@ const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
 const path=require('path')
 const model=require('./model')
+const leader=require('./leadership_controlller')
 const expense_model=require('./expense_model')
 const root_dir=require('../util/path')
-const { Error } = require('sequelize')
+
 const paymethod=require('./pay_controller')
 const authorize=require('./authenticatation')
-const { userInfo } = require('os')
+
+const sequelize = require('../util/database')
+
 
 
 function IsStringInvalid(str)
@@ -117,41 +120,16 @@ router.post('/expense',authorize.authenticate,async(req,res)=>{
     expense,description,category,
    }
    )
-   res.status(201).json({userdata:datauser,success:true,expense})
+   const totalamount=Number(req.user.totalExpese)+Number(datauser.expense)
+ const data= await model.update({totalExpese:totalamount},{where:{id:req.user.id}})
+   res.status(200).json({userdata:datauser,success:true,data})
 
     }catch(err){
         res.status(500).json({success:false,err})
     }
 })
 
-router.get("/leadership",async(req,res)=>{
-    try{
-        const user= await model.findAll()
-   const expense= await expense_model.findAll()
-   const userAggregatedexpense={}
-   expense.forEach(expense => {
-  
-    if(userAggregatedexpense[expense.asadId])
-    {
-       userAggregatedexpense[expense.asadId]=userAggregatedexpense[expense.asadId]+expense.expense
-    }
-    else{
-        userAggregatedexpense[expense.asadId]=expense.expense
-    }
-    
-   });
-   var USERLEADER=[]
-   user.forEach(users=>{
-    USERLEADER.push({name:users.name,amount:userAggregatedexpense[users.id]||0})
-   })
-   USERLEADER.sort((a,b)=>b.amount-a.amount)
-   return res.status(200).json(USERLEADER)
-
-}catch(err){
-    res.status(402).json({error:err})
-}
-
-   })
+router.get("/leadership",leader.leadership)
 router.get('/detail',authorize.authenticate,async(req,res)=>{
     try{
 

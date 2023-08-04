@@ -6,13 +6,8 @@ const sequelize = require('../util/database')
 exports.leadership=async(req,res)=>{
     try{
         const user= await model.findAll({
-            attributes:['id','name',[sequelize.fn('SUM',sequelize.col('expense')),'amount']],
-            include:[{
-                model:expense_model,
-                attributes:[]
-            }],
-            group : ['asad.id'],
-            order:[['amount','DESC']]
+           
+            order:[['totalExpese','DESC']]
         })
    res.status(200).json(user)
 
