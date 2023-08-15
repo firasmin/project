@@ -47,6 +47,7 @@
    
       </form>
       <button id="rzp_button"> premium subcription</button>
+      <button id="download">download</button>
       <div id="message"></div>
       <ul id="leadership"></ul>
     </div>
@@ -103,7 +104,7 @@ const parseJwt = (token) => {
     return null;
   }
 };  
-function leadership()
+function leadership()     
 {
   const inputElent=document.createElement('input')
   inputElent.type='button'
@@ -222,7 +223,28 @@ function removeuser(userId){
     
     })
   }
+  document.getElementById('download').onclick=async function(e)
+  {
+    const token =localStorage.getItem('token')
+    axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+    .then((response) => {
+        if(response.status === 201){
+            //the bcakend is essentially sending a download link
+            //  which if we open in browser, the file would download
+            var a = document.createElement("a");
+            a.href = response.data.fileUrl;
+            a.download = 'myexpense.csv';
+            a.click();
+        } else {
+            throw new Error(response.data.message)
+        }
 
+    })
+    .catch((err) => {
+        showError(err)
+    });
+}
+  
 
 
    </script> 
