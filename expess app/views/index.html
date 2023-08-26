@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>registratin form</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+   
+    
+    <div class="registration form">
+      <header>Signup</header>
+      <form action="/signup" method="post" id="form">
+        <input type="text" name="username" id="username" placeholder="Enter your name">
+        <input type="email" name="email" id="email" placeholder=" Enter your email">
+        <input type="password" name="password"id="password" placeholder="Create your password">
+        <button type="submit" >Submit</button>
+      </form>
+      <div class="signup">
+        <span class="signup">Already have an account?
+          <a href="/login">login</a>
+        </span>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+   <script>
+let form=document.getElementById('form')
+form.addEventListener('submit', onsubmit)
+async function onsubmit(e)
+{
+  try{
+    e.preventDefault();
+    let username=document.getElementById('username').value
+    let email=document.getElementById('email').value
+    let password=document.getElementById('password').value
+    let my_obj={
+        username,
+        email,
+        password
+ }
+
+
+
+ let response= await axios.post("http://localhost:4000/signup",my_obj)
+ if(response.status===201)
+ {
+  window.location.href="login"
+ }
+ else{
+ throw new Error('login.html')
+ }
+}catch(err){
+  document.body.innerHTML+=`<div style="color:red;">${err}</div>`
+
+}
+}
+ </script>
+</body>
+</html>
