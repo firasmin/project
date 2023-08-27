@@ -69,12 +69,14 @@
           
         </tbody>
       </table>
-      
+      <div id="pagination"></div>
     </div>
   
     
   </div>
   <div><ul id="leadership"></ul></div> 
+
+  
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -98,7 +100,7 @@ function onsubmit(e)
  axios.post("http://localhost:4000/expense",my_obj,{headers:{"Authorization":token}}).then((response)=>{
   
  
-  shoeonscreen(response.data.userdata)}).catch((err)=>showerr(err))
+  listproduct(response.data.userdata)}).catch((err)=>showerr(err))
 }
 const parseJwt = (token) => {
   try {
@@ -141,19 +143,78 @@ window.addEventListener("DOMContentLoaded",()=>{
      ispremium()
      leadership()
   }
- 
-  axios.get("http://localhost:4000/detail",{headers:{"Authorization":token}}).then((response)=>{
+  const page=1
+  axios.get(`http://localhost:4000/detail?page=${page}`,{headers:{"Authorization":token}}).then((response)=>{
+    for(var i=0;i<response.data.products.length;i++){
+      listproduct(response.data.products[i])
 
-  for(var i=0;i<response.data.userdetail.length;i++)
-{
-  shoeonscreen(response.data.userdetail[i])
-}}).
+    }
+    showpagination(response.data)
+
+  }).
   catch((error)=>console.log(error))
 
 })
+function listproduct(my_obj)
+{
+  console.log(my_obj)
+  let parentelement =document.getElementById('listofitem');
+    let chidhtml=`<tr class="info" id=${my_obj.id}> 
+     <td> ${my_obj.expense}</td>
+   <td>  ${my_obj.description}</td>
+     <td> ${my_obj.category}</td>
+                  <td> <button onclick=deleteuser('${my_obj.id}')>delete</button></td>
+              </tr>`
+ parentelement.innerHTML=parentelement.innerHTML+chidhtml
+}
 
+function showpagination({
+    currentpage,
+    hasnextpage,
+    nextpage,
+    haspreviouspage,
+    previouspage,
+    lastpage
+})
+{
+  const pagination=document.getElementById('pagination')
+   pagination.innerHTML=''
+   if(haspreviouspage)
+   {
+    const btn2=document.createElement('button')
+    btn2.innerHTML="previous page"
+    btn2.addEventListener('click',()=>getProducts(previouspage))
+    pagination.appendChild(btn2)
+   }
+   const btn=document.createElement('button')
+    btn.innerHTML=`<h3>${currentpage}</h3>`
+    btn.addEventListener('click',()=>getProducts(currentpage))
+    pagination.appendChild(btn)
+    if(hasnextpage)
+    {
+      const btn3=document.createElement('button')
+    btn3.innerHTML='next page'
+    btn3.addEventListener('click',()=>getProducts(nextpage))
+    pagination.appendChild(btn3)
+    }
 
+}
+function getProducts(page){
+  const token=localStorage.getItem('token')
+  axios.get(`http://localhost:4000/detail?page=${page}`,{headers:{"Authorization":token}}).then((response)=>{
+    let pt =document.getElementById('listofitem');
+    pt.innerHTML=''
+   for(var i=0;i<response.data.products.length;i++)
+   {
+    listproduct(response.data.products[i])
+   }
+     
+    showpagination(response.data)
 
+  }).
+  catch((error)=>console.log(error))
+
+}
 
 function shoeonscreen(my_obj)
 {

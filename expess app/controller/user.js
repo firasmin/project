@@ -5,6 +5,7 @@ const jwt=require('jsonwebtoken')
 const model=require('../model/user')
 const sequelize=require('../../util/database')
 const expense_model=require('../model/expense_model')
+const item_per_page=2
 
 function IsStringInvalid(str)
 {
@@ -121,11 +122,25 @@ exports.expense=async(req,res)=>{
         res.status(500).json({success:false,err})
     }
 }
-exports.getexpense=async(req,res)=>{
+exports.getexpense=async(req,res,next)=>{
     try{
-
-    const data=await req.user.getExpenses()
-    res.status(200).json({userdetail:data})
+      const page = +req.query.page||1
+      let totalitem
+      data1=await expense_model.count()
+      totalitem=data1;
+   data=  await expense_model.findAll({
+        offset:(page-1)*item_per_page,
+        limit:item_per_page
+      })
+  res.status(200).json({
+    products:data,
+    currentpage:page,
+    hasnextpage:item_per_page*page<totalitem,
+    nextpage:page+1,
+    haspreviouspage:page>1,
+    previouspage:page-1,
+    lastpage:Math.ceil(totalitem/item_per_page)
+})
 }catch(err){
     res.status(402).json({error:err})
 }

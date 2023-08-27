@@ -1,10 +1,12 @@
 const jwt=require('jsonwebtoken')
-const User=require('./model')
+const User=require('./model/user')
 
 exports.authenticate=(req,res,next)=>{
     try{
-       const token=req.header('authorization')
+       const token=req.header('Authorization')
+       console.log(token)
        const user=jwt.verify(token,'securatewq')
+       console.log(user)
        User.findByPk(user.userid).then(user=>{
         req.user=user
         next()
