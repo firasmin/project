@@ -124,22 +124,25 @@ exports.expense=async(req,res)=>{
 }
 exports.getexpense=async(req,res,next)=>{
     try{
+        console.log(req.query)
+       
       const page = +req.query.page||1
+      const pagesize =+req.query.limit||10
       let totalitem
       data1=await expense_model.count()
       totalitem=data1;
    data=  await expense_model.findAll({
-        offset:(page-1)*item_per_page,
-        limit:item_per_page
+        offset:(page-1)*pagesize,
+        limit:pagesize
       })
   res.status(200).json({
     products:data,
     currentpage:page,
-    hasnextpage:item_per_page*page<totalitem,
+    hasnextpage:pagesize*page<totalitem,
     nextpage:page+1,
     haspreviouspage:page>1,
     previouspage:page-1,
-    lastpage:Math.ceil(totalitem/item_per_page)
+    lastpage:Math.ceil(totalitem/pagesize)
 })
 }catch(err){
     res.status(402).json({error:err})

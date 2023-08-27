@@ -143,8 +143,12 @@ window.addEventListener("DOMContentLoaded",()=>{
      ispremium()
      leadership()
   }
-  const page=1
-  axios.get(`http://localhost:4000/detail?page=${page}`,{headers:{"Authorization":token}}).then((response)=>{
+  const objectUrl=new URLSearchParams(window.location.search)
+  console.log(objectUrl)
+  const page=objectUrl.get('page')||1
+  console.log(page)
+  const limit=10
+  axios.get(`http://localhost:4000/detail?page=${page}&&limit=${limit}`,{headers:{"Authorization":token}}).then((response)=>{
     for(var i=0;i<response.data.products.length;i++){
       listproduct(response.data.products[i])
 
@@ -157,7 +161,6 @@ window.addEventListener("DOMContentLoaded",()=>{
 })
 function listproduct(my_obj)
 {
-  console.log(my_obj)
   let parentelement =document.getElementById('listofitem');
     let chidhtml=`<tr class="info" id=${my_obj.id}> 
      <td> ${my_obj.expense}</td>
@@ -213,20 +216,6 @@ function getProducts(page){
 
   }).
   catch((error)=>console.log(error))
-
-}
-
-function shoeonscreen(my_obj)
-{
-    let parentelement =document.getElementById('listofitem');
-    let chidhtml=`<tr class="info" id=${my_obj.id}> 
-     <td> ${my_obj.expense}</td>
-   <td>  ${my_obj.description}</td>
-     <td> ${my_obj.category}</td>
-                  <td> <button onclick=deleteuser('${my_obj.id}')>delete</button></td>
-              </tr>`
- parentelement.innerHTML=parentelement.innerHTML+chidhtml
-
 
 }
 
