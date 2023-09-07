@@ -1,9 +1,10 @@
 const AWS=require('aws-sdk')
+require('dotenv').config();
 exports.uplodtoS3=(data,filename)=>
 {
-     const BUCKET_NAME='sharpner1'
-     const IAM_USER_KEY='AKIAUTGP63SJFP6TP6I7'
-     const IAM_USER_SECRET='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'
+     const BUCKET_NAME='fd12'
+     const IAM_USER_KEY=process.env.AWS_ACCESS_KEY_ID
+     const IAM_USER_SECRET=process.env.AWS_SECRET_ACCESS_KEY
      let S3bucket=new AWS.S3({
          accessKeyId:IAM_USER_KEY,
          secretAccessKey:IAM_USER_SECRET

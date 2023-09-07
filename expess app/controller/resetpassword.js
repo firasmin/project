@@ -1,10 +1,11 @@
 const uuid = require('uuid');
-const sgMail = require('@sendgrid/mail');
+const Sib = require('sib-api-v3-sdk');
 const bcrypt = require('bcrypt');
 const path=require('path')
 const User = require('../model/user');
 const root_dir=require('../../util/path')
 const Forgotpassword = require('../model/model_reset');
+require('dotenv').config()
 const getemail=async(req,res)=>{
     res.sendFile(path.join(root_dir,'views','forgetpassword.html'))
 }
@@ -20,11 +21,11 @@ const forgotpassword = async (req, res) => {
                     throw new Error(err)
                 })
 
-            sgMail.setApiKey(process.env.SENGRID_API_KEY)
+            sgMail.setApiKey(process.env.API_KEY)
 
             const msg = {
-                to: email, // Change to your recipient
-                from: 'firas.inception@gmail.com', // Change to your verified sender
+                to: 'firas.inception@gmail.com', // Change to your recipient
+                from: 'mindhifiras@gmail.com', // Change to your verified sender
                 subject: 'Sending with SendGrid is Fun',
                 text: 'and easy to do anywhere, even with Node.js',
                 html: `<a href="http://localhost:4000/password/resetpassword/${id}">Reset password</a>`,

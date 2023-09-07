@@ -1,45 +1,15 @@
 const Razorpay=require('razorpay')
 const Order=require('../model/order_model')
-const userService=require('../services/userservice')
-const s3service=require('../services/s3services')
-const file=require('../model/file_download')
- 
-exports.download=async(req,res)=>{
-  try{
-    if(!req.user.ispremium){
-      return res.status(404).json({message:"you are not a premium user",success:false})
-    }
-  const expenses=await userService.getExpenses(req)
-  console.log(expenses)
-  const stringfiedexpense=JSON.stringify(expenses)
-  let userId=req.user.id
-  
-  const filename=`expense/${userId}/${new Date()}.txt`
-  const fileurl=await s3service.uplodtoS3(stringfiedexpense,filename)
-  console.log(fileurl)
-  await  req.user.createFile({path:fileurl})
-  res.status(200).json({fileurl,success:true})    
-  
-  
- }catch(err){
-  res.status(501).json({success:false,err})
- }}
- exports.download_file=async(req,res)=>{
-  try{
 
-  const data=await req.user.getFiles()
-  res.status(200).json({downloadfile:data})
-}catch(err){
-  console.log(err)
-  res.status(402).json({error:err})
-}
-}
+require('dotenv').config();
+ 
+
 
 exports.premiumpay=async(req,res)=>{
   try{
       var rzp=new Razorpay({
-        key_id:'rzp_test_0VdsQiFoT2EiXV',
-          key_secret:'ZCt40DUEPeZdpuXTfnR4afYW'
+        key_id:process.env.RAZORPAY_KEY_ID,
+          key_secret:process.env.RAZORPAY_KEY_SECRET
       })
       const amount=2500
       rzp.orders.create({amount,currency:"INR"},(error,order)=>{
